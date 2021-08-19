@@ -1,10 +1,12 @@
-import NumberFormat from "react-number-format";
-/* eslint-disable max-statements */
-import PropTypes from "prop-types";
 import React, { useEffect, useState } from "react";
-import { add, format } from "date-fns";
-import { Button } from "./button";
 import axios from "axios";
+import NumberFormat from "react-number-format";
+import PropTypes from "prop-types";
+
+import { add, format } from "date-fns";
+import { calculatePercentage, subtract } from "./detailUtils";
+
+import { Button } from "./button";
 
 import {
   AccountHeadline,
@@ -16,15 +18,15 @@ import {
   RowContainer,
 } from "./style";
 
-const subtract = (numOne, numTwo) => {
-  const total = numOne - numTwo;
-  return total;
-};
+// const subtract = (numOne, numTwo) => {
+//   const total = numOne - numTwo;
+//   return total;
+// };
 
-const calculatePercentage = (numOne, numTwo) => {
-  const total = (numOne / numTwo) * 100;
-  return total;
-};
+// const calculatePercentage = (numOne, numTwo) => {
+//   const total = (numOne / numTwo) * 100;
+//   return total;
+// };
 
 const divide = (numOne, numTwo) => {
   const total = numOne / numTwo;
@@ -110,7 +112,13 @@ const annualAppreciation = ({
 };
 
 const Detail = () => {
+
+  const [something] = useState(expensiveFunction())
+
   const [account, setAccount] = useState({});
+  const [state, setState] = useState({
+    mortages: "",
+  });
 
   useEffect(() => {
     axios
@@ -119,16 +127,18 @@ const Detail = () => {
       .catch((err) => console.log(err));
   }, []);
 
+  useEffect(() => {
+    if (account && account.associatedMortgages.length > 0 ) {
+      setState((s) => ({ ...s, mortages: account.associatedMortgages[0] }));
+    }
+  }, [account]);
+
   // checking if account is empty
   if (Object.keys(account).length === 0) {
     return <div>No account provided</div>;
   }
 
-  let mortgage;
   const lastUpdate = new Date(account.lastUpdate);
-  if (account.associatedMortgages.length) {
-    mortgage = account.associatedMortgages[0];
-  }
 
   const recentValuationAmountFormatted = formatAmount(
     account.recentValuation.amount
@@ -171,7 +181,7 @@ const Detail = () => {
           </AccountList>
         </RowContainer>
       </AccountSection>
-      {mortgage && (
+      {state.mortgage && (
         <AccountSection>
           <AccountLabel>Mortgage</AccountLabel>
           <RowContainer
@@ -180,7 +190,7 @@ const Detail = () => {
           >
             <AccountList>
               <InfoText>{currentBalanceFormatted}</InfoText>
-              <InfoText>{account.associatedMortgages[0].name}</InfoText>
+              <InfoText>{state.mortgage.name}</InfoText>
             </AccountList>
           </RowContainer>
         </AccountSection>

@@ -1,0 +1,7 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Details component smoke 1`] = `
+<div>
+  No account provided
+</div>
+`;
